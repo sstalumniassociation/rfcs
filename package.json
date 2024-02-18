@@ -6,6 +6,12 @@
     "preview": "vitepress preview"
   },
   "devDependencies": {
-    "vitepress": "1.0.0-rc.43"
+    "@braintree/sanitize-url": "^7.0.0",
+    "cytoscape": "^3.28.1",
+    "cytoscape-cose-bilkent": "^4.1.0",
+    "dayjs": "^1.11.10",
+    "debug": "^4.3.4",
+    "vitepress": "1.0.0-rc.43",
+    "vitepress-plugin-mermaid": "^2.0.16"
   }
 }
