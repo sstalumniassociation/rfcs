@@ -106,7 +106,7 @@ The new user model adds the following new classes:
 
 In the case of `AlumniMember` and `EmployeeMember`, although they both contain the same properties, they need to fulfill different requirements. For example, `EmployeeMember` is restricted to the Associate membership type.
 
-Implemented code is available ata<https://github.com/sstalumniassociation/api/tree/feat/users/Api/Entities>.
+Implemented code is available at <https://github.com/sstalumniassociation/api/tree/feat/users/Api/Entities>.
 
 ## Drawbacks
 
