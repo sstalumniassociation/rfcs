@@ -1,22 +1,14 @@
-# Template
+# User model
 
-- Feature Name: (fill me in with a unique ident, `my-awesome-feature`)
-- Start Date: (fill me in with today's date, YYYY-MM-DD)
-- RFC PR: [sstalumniassociation/rfcs#0000](https://github.com/rust-lang/rfcs/pull/0000)
+- Feature Name: `user-model`
+- Start Date: 2024-02-18
+- RFC PR: [sstalumniassociation/rfcs#3](https://github.com/rust-lang/rfcs/pull/3)
 
 ## Summary
 
 This RFC proposes a new user model that can handle all current use cases, models the current membership system accurately, and introduces more flexibility for future use cases.
 
 ## Motivation
-
-Why are we doing this? What use cases does it support? What is the expected
-outcome?
-
-Please focus on explaining the motivation so that if this RFC is not accepted,
-the motivation could be used to develop alternative solutions. In other words,
-enumerate the constraints you are trying to solve without coupling them too
-closely to the solution you have in mind.
 
 The SSTAA App Platform has gotten many feature requests, such as check-ins, event management, and even facility booking. In its current state, the user model is not a proper representation of the use cases that SSTAA needs to handle, and was designed only to support the membership tracking use case.
 
@@ -29,12 +21,6 @@ When checking people in, because the API required authentication, the SSTAARs iP
 These are some of the current limitations experienced by the current model. More limitations could come up in the future as more features are added, such as the Guard House app.
 
 ## Detailed design
-
-This is the bulk of the RFC. Explain the design in enough detail for somebody
-familiar with React to understand, and for somebody familiar with the
-implementation to implement. This should get into specifics and corner-cases,
-and include examples of how the feature is used. Any new terminology should be
-defined here.
 
 ```mermaid
 ---
@@ -97,40 +83,47 @@ classDiagram
     }
 ```
 
+In this new user model, two entities are created for user and member. All SSTAA members are users, but users may not be SSTAA members.
+
+It also introduces various other user types aside from the membership system, such as `Employee`, `ServiceAccount`, and `SystemAdmin`.
+
+All user variations are subclasses of the `User` class.
+
+The new user model adds the following new classes:
+
+- Member
+  - Abstract class
+- AlumniMember
+  - An SSTAA member who studied in SST
+- EmployeeMember
+  - An SSTAA member who has previously worked in SST, is working in SST, or previously studied in SST and is now working in SST
+- Employee
+  - An employee of SST who is not an SSTAA member
+- ServiceAccount
+  - A service account used by SSTAARs or the Guard House app
+- SystemAdmin
+  - Root
+
+In the case of `AlumniMember` and `EmployeeMember`, although they both contain the same properties, they need to fulfill different requirements. For example, `EmployeeMember` is restricted to the Associate membership type.
+
+Implemented code is available ata<https://github.com/sstalumniassociation/api/tree/feat/users/Api/Entities>.
+
 ## Drawbacks
 
-Why should we *not* do this? Please consider:
-
-- implementation cost, both in term of code size and complexity
-- whether the proposed feature can be implemented in user space
-- the impact on teaching people React
-- integration of this feature with other existing and planned features
-- cost of migrating existing React applications (is it a breaking change?)
-
-There are tradeoffs to choosing any path. Attempt to identify them here.
+- It is a breaking change and non-backwards compatible. This means it will require downstream updates to all SSTAA apps, including the SSTAARs iPad companion app.
+- Although it allowes greater flexibility in the use cases that SSTAA can handle, it also increases the complexity of the platform. I would argue that the complexity is a necessary evil in this specific case.
 
 ## Alternatives
 
-What other designs have been considered? What is the impact of not doing this?
+No alternatives were considered yet.
 
 ## Adoption strategy
 
-If we implement this proposal, how will existing React developers adopt it? Is
-this a breaking change? Can we write a codemod? Should we coordinate with
-other projects or libraries?
+This will be adopted as part of the new v1 API rollout. SDKs will be provided which support both gRPC and REST.
 
-## How we teach this
-
-What names and terminology work best for these concepts and why? How is this
-idea best presented? As a continuation of existing React patterns?
-
-Would the acceptance of this proposal mean the React documentation must be
-re-organized or altered? Does it change how React is taught to new developers
-at any level?
-
-How should this feature be taught to existing React developers?
+Since this change is not backwards compatible, it will require updates.
 
 ## Unresolved questions
 
-Optional, but suggested for first drafts. What parts of the design are still
-TBD?
+- Have not fully thought through the fields required for the various users, ond the other information that should be stored.
+- How will this integrate with events / bookings in the future? Since they are currently available at the user model, it means a service account could technically make a booking. Should the relationship be changed?
